@@ -21,6 +21,16 @@ detector.addEventListener("onInitializeSuccess", function() {
   $("#face_video").css("display", "none");
 });
 
+function play_audio(task) {
+  if(task == 'play'){
+       $(".my_audio").trigger('play');
+  }
+  if(task == 'stop'){
+       $(".my_audio").trigger('pause');
+       $(".my_audio").prop("currentTime",0);
+  }
+}
+
 function log(node_name, msg) {
   $(node_name).append("<span>" + msg + "</span><br />")
 }
@@ -74,44 +84,35 @@ detector.addEventListener("onStopSuccess", function() {
 //Add a callback to receive the results from processing an image.
 //The faces object contains the list of the faces detected in an image.
 //Faces object contains probabilities for all the different expressions, emotions and appearance metrics
-detector.addEventListener("onImageResultsSuccess", function(faces, image,
-  timestamp) {
+detector.addEventListener("onImageResultsSuccess", function(faces, image, timestamp) {
   $('#results').html("");
   log('#results', "Timestamp: " + timestamp.toFixed(2));
   log('#results', "Number of faces found: " + faces.length);
   if (faces.length > 0) {
-    // Gets gender, age, facial features
-    log('#results', "Appearance: " + JSON.stringify(faces[0].appearance));
+    
 
-    log('#results', "Emotions: " + JSON.stringify(faces[0].emotions,
-      function(key, val) {
-        return val.toFixed ? Number(val.toFixed(0)) : val;
-      }));
-    log('#results', "Expressions: " + JSON.stringify(faces[0].expressions,
-      function(key, val) {
-        return val.toFixed ? Number(val.toFixed(0)) : val;
-      }));
+    $('.my_audio').trigger('load');
+    setInterval(function(){
+      play_audio('play')
+    }, 20*1000);
+    play_audio('stop');
 
-    // Return an emoji of face
-    log('#results', "Emoji: " + faces[0].emojis.dominantEmoji);
-    drawFeaturePoints(image, faces[0].featurePoints);
-  }
+    // if((timestamp.toFixed(0) % 30) == 0){
+    //   if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128528){ //open mouth smiley
+    //     $('.my_audio').trigger('load');
+    //     console.log('triggered')
+    //     setTimeout(function(){
+    //       play_audio('play');
+    //     }, 10 *1000);
+    //   }
+      // else{
+      //   play_audio('stop');
+      // }
+    // }
+    // }, 20 * 1000);
+      
+    
+    }
 });
 
-//Draw the detected facial feature points on the image
-function drawFeaturePoints(img, featurePoints) {
-  var contxt = $('#face_video_canvas')[0].getContext('2d');
 
-  var hRatio = contxt.canvas.width / img.width;
-  var vRatio = contxt.canvas.height / img.height;
-  var ratio = Math.min(hRatio, vRatio);
-
-  contxt.strokeStyle = "#FFFFFF";
-  for (var id in featurePoints) {
-    contxt.beginPath();
-    contxt.arc(featurePoints[id].x,
-      featurePoints[id].y, 2, 0, 2 * Math.PI);
-    contxt.stroke();
-
-  }
-}
