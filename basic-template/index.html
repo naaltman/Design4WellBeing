@@ -79,7 +79,7 @@
 
     <div class ="rows">
      
-      <div class="cols-1" id="affdex_elements" style="width:200px;height:200px"></div>
+      <div class="cols-1" id="affdex_elements"></div>
       
       <div class="cols-2">
         <button id="start" onclick="onStart()">Start</button>
@@ -95,12 +95,79 @@
       </div>
       
       <div class ="cols-4">
-        <audio class="my_audio">
-          <source src="sounds/neutral.mp3" type="audio/mpeg">
+
+        <audio id="song" preload class="happy-songs">
+          <source src="full_playlist/laughing-1.mp3" type="audio/mpeg"/>
         </audio>
+        <audio id="song-2" preload class="happy-songs">
+          <source src="full_playlist/laughing-2.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-3" preload class="happy-songs">
+          <source src="full_playlist/laughing-3.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-4" preload class="happy-songs">
+          <source src="full_playlist/laughing-4.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-5" preload class="happy-songs">
+          <source src="full_playlist/laughing-5.mp3" type="audio/mpeg"/>
+        </audio>
+        
+        <audio id="song-6" preload class="sad-songs">
+          <source src="full_playlist/disappointed-1.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-7" preload class="sad-songs">
+          <source src="full_playlist/disappointed-2.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-8" preload class="sad-songs">
+          <source src="full_playlist/disappointed-3.mp3" type="audio/mpeg"/>
+        </audio>
+        
+
+        <audio id="song-9" preload class="angry-songs">
+          <source src="full_playlist/rage-1.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-10" preload class="angry-songs">
+          <source src="full_playlist/rage-2.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-11" preload class="angry-songs">
+          <source src="full_playlist/rage-3.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-12" preload class="angry-songs">
+          <source src="full_playlist/rage-4.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-13" preload class="angry-songs">
+          <source src="full_playlist/rage-5.mp3" type="audio/mpeg"/>
+        </audio>
+
+        <audio id="song-14" preload class="calm-songs">
+          <source src="full_playlist/relaxed-1.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-15" preload class="calm-songs">
+          <source src="full_playlist/relaxed-2.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-16" preload class="calm-songs">
+          <source src="full_playlist/relaxed-3.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-17" preload class="calm-songs">
+          <source src="full_playlist/relaxed-4.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-18" preload class="calm-songs">
+          <source src="full_playlist/relaxed-5.mp3" type="audio/mpeg"/>
+        </audio>
+
+        <audio id="song-19" preload class="smile-songs">
+          <source src="full_playlist/smile-1.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-20" preload class="smile-songs">
+          <source src="full_playlist/smile-2.mp3" type="audio/mpeg"/>
+        </audio>
+        <audio id="song-21" preload class="smile-songs">
+          <source src="full_playlist/smile-3.mp3" type="audio/mpeg"/>
+        </audio>
+
         <center>
-          <button onclick="play_audio('play')">PLAY</button>
-          <button onclick="play_audio('stop')">PAUSE</button>
+          <button onclick="play_audio('play', 'calm')">PLAY</button>
+          <button onclick="play_audio('stop', 'calm')">PAUSE</button>
         </center>
       </div>
     <!-- End of page body  -->

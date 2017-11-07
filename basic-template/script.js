@@ -1,9 +1,11 @@
 // SDK Needs to create video and canvas nodes in the DOM in order to function
 // Here we are adding those nodes a predefined div.
 var divRoot = $("#affdex_elements")[0];
-var width = 680;
-var height = 480;
+var width = 200;
+var height = 200;
 var faceMode = affdex.FaceDetectorMode.LARGE_FACES;
+var mood_playing = null;
+var cur_song_index = 0;
 //Construct a CameraDetector and specify the image width / height and face detector mode.
 var detector = new affdex.CameraDetector(divRoot, width, height, faceMode);
 
@@ -21,15 +23,39 @@ detector.addEventListener("onInitializeSuccess", function() {
   $("#face_video").css("display", "none");
 });
 
-function play_audio(task) {
+
+function play_audio(task, mood) {
+  var song_list = [];
+  // pick random song depending on mood   
+  // console.log(song_list[song_index]);
+
   if(task == 'play'){
-       $(".my_audio").trigger('play');
+    if(mood == 'laughing'){ 
+      song_list = document.getElementsByClassName('happy-songs');
+    }
+    else if(mood == 'angry'){
+      song_list = document.getElementsByClassName('rage-songs');
+    }
+    else if(mood == 'smile'){
+      song_list = document.getElementsByClassName('smile-songs');
+    }
+    else if(mood == 'relaxed'){
+      song_list = document.getElementsByClassName('calm-songs');
+    }
+    else if(mood == 'sad'){
+      song_list = document.getElementsByClassName('sad-songs');
+    }
+    // pick a random song from that mood 
+    cur_song_index = Math.floor((Math.random() * song_list.length));
+    console.log('index ', cur_song_index);
+    song_list[cur_song_index].play();
   }
-  if(task == 'stop'){
-       $(".my_audio").trigger('pause');
-       $(".my_audio").prop("currentTime",0);
+  else if(task == 'stop'){
+      song_list[cur_song_index].pause();
+      song_list[cur_song_index].currentTime = 0;       
   }
-}
+  
+};
 
 function log(node_name, msg) {
   $(node_name).append("<span>" + msg + "</span><br />")
@@ -89,28 +115,51 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
   log('#results', "Timestamp: " + timestamp.toFixed(2));
   log('#results', "Number of faces found: " + faces.length);
   if (faces.length > 0) {
-    
+    var emotion_counter = {
+      'sad':0,
+      'laughing':0,
+      'angry':0,
+      'calm':0,
+      'smile':0}
 
-    $('.my_audio').trigger('load');
-    setInterval(function(){
-      play_audio('play')
-    }, 20*1000);
-    play_audio('stop');
+    if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128542){
+       // disappointed
+      emotion_counter['sad'] += 1;
+    }
+    else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128514){
+      // laughing
+      emotion_counter['laughing'] = emotion_counter['laughing'] +1;
+    }
+    else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128545){
+      // rage 
+      emotion_counter['angry'] = emotion_counter['angry'] +1;
+    }
+    else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128528){
+      // relaxed
+      emotion_counter['calm'] = emotion_counter['calm'] +1;
+    }
+    else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 9786 || faces[0].emojis.dominantEmoji.codePointAt(0) == 128515){
+      // smiley or big smiley
+      emotion_counter['smile'] = emotion_counter['smile'] +1;
+    }
 
-    // if((timestamp.toFixed(0) % 30) == 0){
-    //   if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128528){ //open mouth smiley
-    //     $('.my_audio').trigger('load');
-    //     console.log('triggered')
-    //     setTimeout(function(){
-    //       play_audio('play');
-    //     }, 10 *1000);
-    //   }
-      // else{
-      //   play_audio('stop');
-      // }
-    // }
-    // }, 20 * 1000);
-      
+    setTimeout(function(){
+      var max = 0;
+      var emotion;
+      for(key in emotion_counter){
+        if (emotion_counter[key] > max){
+          max = emotion_counter[key];
+          emotion = key;
+        }
+      }
+      if(mood_playing){
+        play_audio('stop',mood_playing);
+      }
+      console.log('playing music for emotion');
+      play_audio('play',emotion);
+      mood_playing = emotion;
+
+    },15 *1000);      
     
     }
 });
