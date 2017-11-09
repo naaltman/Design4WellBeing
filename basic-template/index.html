@@ -1,178 +1,62 @@
 <html>
-<style>
-* {
-    box-sizing: border-box;
-}
-[class*="cols-"] {
-    float: left;
-    padding: 5px;
-}
-
-.floating-box {
-    float: left;
-    width: 150px;
-    height: 75px;
-    margin: 10px;
-    border: 3px solid #73AD21;  
-}
-
-.cols-1 {
-  width: 20%;
-  margin-top:8%;
-  border: 2px solid black;
-  height:250px;
-
-}
-.cols-2 {
-  width: 20%;
-  margin-top:8%;
-  margin-left:8%;
-  height:250px;
-}
-.cols-3{
-  width:20%;
-  margin-top: 8%;
-  color:#FFF;
-  font-family: 'Open Sans', sans-serif;
-  background-color:#b2c3d2;
-  margin-right:8%;
-  height:250px;
-
-}
-.cols-4 {
-  width: 20%;
-  margin-top:8%;
-  margin-right:2%;
-  image: url("pause-button.png");
-  background-color:#b2c3d2;
-  height:250px;
-}
-
-#title{
-  font-size:60px;
-  text-align: center;
-  margin-top:20px;
-  color: #FFFFFF;
-  font-family: 'Lato', sans-serif;
-}
-</style>
 
 <head>
 <!-- import jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-<!--import default Affectiva CSS code-->
-<!-- <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" /> -->
-<!-- <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" /> -->
-
 <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet">
 
 <!-- import Affectiva javascript support -->
-<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://download.affectiva.com/js/3.2/affdex.js"></script>
-</head>
 
+<link rel="stylesheet" href="style.css">
+
+</head>
 
 <body style="background-image: url(mountains.jpg); background-position: cover;">
   <div id="title">breathe deeply</div>
 
     <div class ="rows">
-     
-      <div class="cols-1" id="affdex_elements"></div>
-      
+
+      <div class="cols-1">
+        <center>
+          Use Affectiva's emotion tracker to help you be more calm<br>
+          <br>(1) Press the start button to start the facial recognition detector.
+          <br>(2) Listen to the sounds, and let yourself feel peaceful.
+          <br>(3) Press the stop button to end the detector, or pause to stop the song.
+        </center>
+      </div>
+
       <div class="cols-2">
-        <button id="start" onclick="onStart()">Start</button>
-        <button id="stop" onclick="onStop()">Stop</button>
-        <button id="reset" onclick="onReset()">Reset</button>
+        <center>
+          <div id="affdex_elements"></div>
+          <button id="start" onclick="onStart()">Start</button>
+          <button id="stop" onclick="onStop()">Stop</button>
+          <button id="reset" onclick="onReset()">Reset</button>
+        </center>
       </div>
 
       <div class ="cols-3">
-        Affectiva JS SDK CameraDetector tracks emotions, to help you be more calm<br>
-        <br>(1) Press the start button to start the facial recognition detector.
-        <br>(2) Listen to the sounds, and let yourself feel peaceful.
-        <br>(3) Press the stop button to end the detector, or pause to stop the song.
+        <center><img src="Preloader_2.gif" style="margin-top:10%";></center>
       </div>
-      
+
       <div class ="cols-4">
-
-        <audio id="song" preload class="happy-songs">
-          <source src="full_playlist/laughing-1.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-2" preload class="happy-songs">
-          <source src="full_playlist/laughing-2.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-3" preload class="happy-songs">
-          <source src="full_playlist/laughing-3.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-4" preload class="happy-songs">
-          <source src="full_playlist/laughing-4.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-5" preload class="happy-songs">
-          <source src="full_playlist/laughing-5.mp3" type="audio/mpeg"/>
-        </audio>
-        
-        <audio id="song-6" preload class="sad-songs">
-          <source src="full_playlist/disappointed-1.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-7" preload class="sad-songs">
-          <source src="full_playlist/disappointed-2.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-8" preload class="sad-songs">
-          <source src="full_playlist/disappointed-3.mp3" type="audio/mpeg"/>
-        </audio>
-        
-
-        <audio id="song-9" preload class="angry-songs">
-          <source src="full_playlist/rage-1.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-10" preload class="angry-songs">
-          <source src="full_playlist/rage-2.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-11" preload class="angry-songs">
-          <source src="full_playlist/rage-3.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-12" preload class="angry-songs">
-          <source src="full_playlist/rage-4.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-13" preload class="angry-songs">
-          <source src="full_playlist/rage-5.mp3" type="audio/mpeg"/>
-        </audio>
-
-        <audio id="song-14" preload class="calm-songs">
-          <source src="full_playlist/relaxed-1.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-15" preload class="calm-songs">
-          <source src="full_playlist/relaxed-2.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-16" preload class="calm-songs">
-          <source src="full_playlist/relaxed-3.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-17" preload class="calm-songs">
-          <source src="full_playlist/relaxed-4.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-18" preload class="calm-songs">
-          <source src="full_playlist/relaxed-5.mp3" type="audio/mpeg"/>
-        </audio>
-
-        <audio id="song-19" preload class="smile-songs">
-          <source src="full_playlist/smile-1.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-20" preload class="smile-songs">
-          <source src="full_playlist/smile-2.mp3" type="audio/mpeg"/>
-        </audio>
-        <audio id="song-21" preload class="smile-songs">
-          <source src="full_playlist/smile-3.mp3" type="audio/mpeg"/>
-        </audio>
-
         <center>
-          <button onclick="play_audio('play', 'calm')">PLAY</button>
-          <button onclick="play_audio('stop', 'calm')">PAUSE</button>
+          <button id="playBtn">PLAY</button>
+          <button id="stopBtn">PAUSE</button>
+          <!-- <button id="nextBtn">NEXT</button> -->
         </center>
       </div>
     <!-- End of page body  -->
     </div>
-<!-- Connect locally-hosted default affectiva camera script that makes everything work-->
-<script src="script.js"></script>
+
+  <!-- Connect locally-hosted default affectiva camera script that makes everything work-->
+  <script src="script.js"></script>
+  <!-- Link to Howler javascript library  -->
+  <script src="../node_modules/howler/src/howler.core.js"></script>
+  <!-- Connect playlist  -->
+  <script src="player.js"></script>
 </body>
 </html>

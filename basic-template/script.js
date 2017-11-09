@@ -1,11 +1,14 @@
 // SDK Needs to create video and canvas nodes in the DOM in order to function
 // Here we are adding those nodes a predefined div.
 var divRoot = $("#affdex_elements")[0];
-var width = 200;
-var height = 200;
+var width = 285;
+var height = 245;
 var faceMode = affdex.FaceDetectorMode.LARGE_FACES;
+
 var mood_playing = null;
-var cur_song_index = 0;
+var cur_song_index;
+var song_list = [];
+
 //Construct a CameraDetector and specify the image width / height and face detector mode.
 var detector = new affdex.CameraDetector(divRoot, width, height, faceMode);
 
@@ -25,12 +28,11 @@ detector.addEventListener("onInitializeSuccess", function() {
 
 
 function play_audio(task, mood) {
-  var song_list = [];
-  // pick random song depending on mood   
-  // console.log(song_list[song_index]);
+  console.log('current mood', mood);
+  // pick random song depending on mood
 
   if(task == 'play'){
-    if(mood == 'laughing'){ 
+    if(mood == 'laughing'){
       song_list = document.getElementsByClassName('happy-songs');
     }
     else if(mood == 'angry'){
@@ -45,16 +47,16 @@ function play_audio(task, mood) {
     else if(mood == 'sad'){
       song_list = document.getElementsByClassName('sad-songs');
     }
-    // pick a random song from that mood 
-    cur_song_index = Math.floor((Math.random() * song_list.length));
-    console.log('index ', cur_song_index);
+    // pick a random song from that mood
+    rand = Math.random() * song_list.length;
+    cur_song_index = Math.floor(rand);
     song_list[cur_song_index].play();
   }
   else if(task == 'stop'){
       song_list[cur_song_index].pause();
-      song_list[cur_song_index].currentTime = 0;       
+      song_list[cur_song_index].currentTime = 0;
   }
-  
+
 };
 
 function log(node_name, msg) {
@@ -91,13 +93,13 @@ function onReset() {
 
 //Add a callback to notify when camera access is allowed
 detector.addEventListener("onWebcamConnectSuccess", function() {
-  log('#logs', "Webcam access allowed");
+  // log('#logs', "Webcam access allowed");
   console.log("Webcam access allowed");
 });
 
 //Add a callback to notify when camera access is denied
 detector.addEventListener("onWebcamConnectFailure", function() {
-  log('#logs', "webcam denied");
+  // log('#logs', "webcam denied");
   console.log("Webcam access denied");
 });
 
@@ -115,6 +117,7 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
   log('#results', "Timestamp: " + timestamp.toFixed(2));
   log('#results', "Number of faces found: " + faces.length);
   if (faces.length > 0) {
+    drawFeaturePoints(image, faces[0].featurePoints);
     var emotion_counter = {
       'sad':0,
       'laughing':0,
@@ -131,7 +134,7 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
       emotion_counter['laughing'] = emotion_counter['laughing'] +1;
     }
     else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128545){
-      // rage 
+      // rage
       emotion_counter['angry'] = emotion_counter['angry'] +1;
     }
     else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128528){
@@ -156,12 +159,33 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
         play_audio('stop',mood_playing);
       }
       console.log('playing music for emotion');
-      play_audio('play',emotion);
-      mood_playing = emotion;
+      // play_audio('play',emotion);
+      // mood_playing = emotion;
 
-    },15 *1000);      
-    
+      // SOMEHOW SEND THE PLAYER THE EMOTION HERE AND CLICK PLAY AND THEN U DID IT GOOD JOB
+      player.random_song(emotion);
+      // player.play()
+
+
+    }, 15 *1000);
+
     }
 });
 
+//Draw the detected facial feature points on the image
+function drawFeaturePoints(img, featurePoints) {
+  var contxt = $('#face_video_canvas')[0].getContext('2d');
 
+  var hRatio = contxt.canvas.width / img.width;
+  var vRatio = contxt.canvas.height / img.height;
+  var ratio = Math.min(hRatio, vRatio);
+
+  contxt.strokeStyle = "#FFFFFF";
+  for (var id in featurePoints) {
+    contxt.beginPath();
+    contxt.arc(featurePoints[id].x,
+      featurePoints[id].y, 2, 0, 2 * Math.PI);
+    contxt.stroke();
+
+  }
+}
