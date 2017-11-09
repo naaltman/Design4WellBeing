@@ -11,39 +11,48 @@ var Player = function(playlist) {
   this.playlist = playlist;
   this.index = 0;
   this.sound = null;
+  this.mood = ''; // default mood is relaxed
 
 };
 
 Player.prototype = {
+
   /**
    * Play a song in the playlist.
    * @param  {Number} index Index of the song in the playlist (leave empty to play the first or current).
    */
-  play: function(index) {
+  play: function(index, mood) {
     var self = this;
     var sound;
 
     index = typeof index === 'number' ? index : self.index;
-    var data = self.playlist[index];
+    mood = typeof mood === 'String' ? mood : self.mood;
+
+    if(self.playlist[self.mood][self.index].howl){
+      console.log("song is playing, stopping");
+      self.playlist[self.mood][self.index].howl.fade(1,0,1000);
+    }
+
+    var data = self.playlist[mood];
 
     // If we already loaded this track, use the current one.
     // Otherwise, setup and load a new Howl.
-    if (data.howl) {
-      sound = data.howl;
-    } else {
-      sound = data.howl = new Howl({
-        src: [data.file],
-        html5: true, // Force to HTML5 so that the audio can stream in (best for large files).
-        onplay: function() {
-          // Start upating the progress of the track.
+    if (data[index].howl){
+      sound=data[index].howl;
+    } else{
+      sound = data[index].howl = new Howl({
+        src:[data[index].file],
+        html5: true,
+        onplay: function(){
           requestAnimationFrame(self.step.bind(self));
         },
       });
-    }
+    };
     // Begin playing the sound.
     sound.play();
     // Keep track of the index we are currently playing.
     self.index = index;
+    self.mood = mood;
   },
 
   /**
@@ -52,25 +61,26 @@ Player.prototype = {
   pause: function() {
     var self = this;
     // Get the Howl we want to manipulate.
-    var sound = self.playlist[self.index].howl;
+    var sound = self.playlist[self.mood][self.index].howl;
     // Pause the sound.
     sound.pause();
   },
 
   /**
-   *  Pick a random new song to play
+   *  Pick a new song to play randomly from songs of that mood
    */
   random_song: function(mood){
       var self = this;
-      rand = Math.random() * self.playlist.length;
+
+      rand = Math.random() * self.playlist[mood].length;
       index = Math.floor(rand);
 
-      if(self.playlist[index].tag == mood){
-        console.log("random song found");
-        return self.playNew(index);
+      // console.log("songs for current mood", self.playlist[mood]);
+
+      if(self.playlist[mood][index].tag == mood){
+        return self.play(index,mood);
       }
       else{
-        console.log('not relaxed song generate new index');
         return self.random_song(mood);
       }
   },
@@ -79,12 +89,18 @@ Player.prototype = {
    * Skip to a specific track based on its playlist index.
    * @param  {Number} index Index in the playlist.
    */
-  playNew: function(index) {
+  playNew: function(index, mood) {
     var self = this;
-    // fade out the current song
-    self.playlist[self.index].howl.fade(1,0,1000);
-    // Play the new track.
-    self.play(index);
+    // fade out the current song if something already playing
+    if (!self.playlist[self.mood][self.index]){
+      self.play(index, mood);
+    }
+    else{
+      // fade out old and play new
+      self.playlist[self.mood][self.index].howl.fade(1,0,1000);
+      // Play the new track.
+      self.play(index, mood);
+    }
   },
 
   /**
@@ -94,7 +110,7 @@ Player.prototype = {
     var self = this;
 
     // Get the Howl we want to manipulate.
-    var sound = self.playlist[self.index].howl;
+    var sound = self.playlist[self.mood][self.index].howl;
 
     // If the sound is still playing, continue stepping.
     if (sound.playing()) {
@@ -116,15 +132,11 @@ Player.prototype = {
 };
 
 // Setup our new audio player class and pass it the playlist.
-var player = new Player([
+var player = new Player({
+  'relaxed':[
   {
     file: 'full_playlist/relaxed-1.mp3',
     tag: 'relaxed',
-    howl: null
-  },
-  {
-    file: 'full_playlist/relaxed-2.mp3',
-    tag: 'smile',
     howl: null
   },
   {
@@ -141,7 +153,8 @@ var player = new Player([
     file: 'full_playlist/relaxed-5.mp3',
     tag: 'relaxed',
     howl: null
-  },
+  }],
+  'disappointed':[
   {
     file: 'full_playlist/disappointed-1.mp3',
     tag: 'disappointed',
@@ -156,7 +169,8 @@ var player = new Player([
     file: 'full_playlist/disappointed-3.mp3',
     tag: 'disappointed',
     howl: null
-  },
+  }],
+  'laughing':[
   {
     file: 'full_playlist/laughing-1.mp3',
     tag: 'laughing',
@@ -181,7 +195,8 @@ var player = new Player([
     file: 'full_playlist/laughing-5.mp3',
     tag: 'laughing',
     howl: null
-  },
+  }],
+  'rage':[
   {
     file: 'full_playlist/rage-1.mp3',
     tag: 'rage',
@@ -206,7 +221,8 @@ var player = new Player([
     file: 'full_playlist/rage-5.mp3',
     tag: 'rage',
     howl: null
-  },
+  }],
+  'smile':[
   {
     file: 'full_playlist/smile-1.mp3',
     tag: 'smile',
@@ -221,16 +237,17 @@ var player = new Player([
     file: 'full_playlist/smile-3.mp3',
     tag: 'smile',
     howl: null
-  }
-]);
+  },
+  {
+    file: 'full_playlist/relaxed-2.mp3',
+    tag: 'smile',
+    howl: null
+  }]
+});
 
-playBtn.addEventListener('click', function() {
-  player.play();
-  // play_audio()
-});
-stopBtn.addEventListener('click', function() {
-  player.pause();
-});
-// nextBtn.addEventListener('click', function() {
-//   player.random_song('relaxed');
+// playBtn.addEventListener('click', function() {
+//   player.play();
 // });
+stopBtn.addEventListener('click', function() {
+  player.stop();
+});

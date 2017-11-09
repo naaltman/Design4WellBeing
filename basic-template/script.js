@@ -2,7 +2,7 @@
 // Here we are adding those nodes a predefined div.
 var divRoot = $("#affdex_elements")[0];
 var width = 285;
-var height = 245;
+var height = 265;
 var faceMode = affdex.FaceDetectorMode.LARGE_FACES;
 
 var mood_playing = null;
@@ -25,39 +25,6 @@ detector.addEventListener("onInitializeSuccess", function() {
   $("#face_video_canvas").css("display", "block");
   $("#face_video").css("display", "none");
 });
-
-
-function play_audio(task, mood) {
-  console.log('current mood', mood);
-  // pick random song depending on mood
-
-  if(task == 'play'){
-    if(mood == 'laughing'){
-      song_list = document.getElementsByClassName('happy-songs');
-    }
-    else if(mood == 'angry'){
-      song_list = document.getElementsByClassName('rage-songs');
-    }
-    else if(mood == 'smile'){
-      song_list = document.getElementsByClassName('smile-songs');
-    }
-    else if(mood == 'relaxed'){
-      song_list = document.getElementsByClassName('calm-songs');
-    }
-    else if(mood == 'sad'){
-      song_list = document.getElementsByClassName('sad-songs');
-    }
-    // pick a random song from that mood
-    rand = Math.random() * song_list.length;
-    cur_song_index = Math.floor(rand);
-    song_list[cur_song_index].play();
-  }
-  else if(task == 'stop'){
-      song_list[cur_song_index].pause();
-      song_list[cur_song_index].currentTime = 0;
-  }
-
-};
 
 function log(node_name, msg) {
   $(node_name).append("<span>" + msg + "</span><br />")
@@ -119,15 +86,15 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
   if (faces.length > 0) {
     drawFeaturePoints(image, faces[0].featurePoints);
     var emotion_counter = {
-      'sad':0,
+      'disappointed':0,
       'laughing':0,
-      'angry':0,
-      'calm':0,
+      'rage':0,
+      'relaxed':0,
       'smile':0}
 
     if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128542){
        // disappointed
-      emotion_counter['sad'] += 1;
+      emotion_counter['disappointed'] = emotion_counter['disappointed'] + 1;
     }
     else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128514){
       // laughing
@@ -135,11 +102,11 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
     }
     else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128545){
       // rage
-      emotion_counter['angry'] = emotion_counter['angry'] +1;
+      emotion_counter['rage'] = emotion_counter['rage'] +1;
     }
     else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 128528){
       // relaxed
-      emotion_counter['calm'] = emotion_counter['calm'] +1;
+      emotion_counter['relaxed'] = emotion_counter['relaxed'] +1;
     }
     else if(faces[0].emojis.dominantEmoji.codePointAt(0) == 9786 || faces[0].emojis.dominantEmoji.codePointAt(0) == 128515){
       // smiley or big smiley
@@ -148,24 +115,31 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
 
     setTimeout(function(){
       var max = 0;
-      var emotion;
+      var emotion="";
       for(key in emotion_counter){
         if (emotion_counter[key] > max){
           max = emotion_counter[key];
           emotion = key;
         }
       }
-      if(mood_playing){
-        play_audio('stop',mood_playing);
+      if(emotion == ""){
+        emotion = "relaxed"; // set default emotion to be relaxed
       }
-      console.log('playing music for emotion');
+      // if(mood_playing){
+      //   play_audio('stop',mood_playing);
+      // }
+      console.log('playing music for emotion', emotion);
       // play_audio('play',emotion);
       // mood_playing = emotion;
 
       // SOMEHOW SEND THE PLAYER THE EMOTION HERE AND CLICK PLAY AND THEN U DID IT GOOD JOB
-      player.random_song(emotion);
-      // player.play()
+      player.mood = emotion;
 
+      console.log('set player mood to be', player.mood);
+      console.log('playlist is ', player.playlist);
+
+      // player.random_song(emotion);
+      player.play()
 
     }, 15 *1000);
 
